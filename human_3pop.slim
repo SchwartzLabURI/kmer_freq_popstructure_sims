@@ -1,0 +1,101 @@
+initialize() {
+			initializeSLiMOptions(nucleotideBased=T);
+         defineConstant("L", initializeAncestralNucleotides("GRCh38_full_analysis_set_plus_decoy_hla_noN_chr1_noblanks_noMRsmall2.fa"));
+         //initializeMutationRate(2.36e-8);
+         initializeMutationTypeNuc("m1", 0.5, "f", 0.0);
+         initializeGenomicElementType("g1", m1, 1.0, mmJukesCantor(1e-7));
+         initializeGenomicElement(g1, 0, L-1);
+         initializeRecombinationRate(1e-8);
+}
+     // INITIALIZE the ancestral African population
+     1 { sim.addSubpop("p1", asInteger(round(7310.370867595234))); }
+     // END BURN-IN; EXPAND the African population
+     73105 { p1.setSubpopulationSize(asInteger(round(14474.54608753566))); }
+     // SPLIT Eurasians (p2) from Africans (p1) and SET UP MIGRATION
+     76968 {
+         sim.addSubpopSplit("p2", asInteger(round(1861.288190027689)), p1);
+         p1.setMigrationRates(c(p2), c(15.24422112e-5));
+         p2.setMigrationRates(c(p1), c(15.24422112e-5));
+}
+
+// SPLIT p2 into European (p2) and East Asian (p3); RESIZE; MIGRATION
+     78084 {
+         sim.addSubpopSplit("p3", asInteger(round(553.8181989)), p2);
+         p2.setSubpopulationSize(asInteger(round(1032.1046957333444)));
+         p1.setMigrationRates(c(p2, p3), c(2.54332678e-5, 0.7770583877e-5));
+         p2.setMigrationRates(c(p1, p3), c(2.54332678e-5, 3.115817913e-5));
+         p3.setMigrationRates(c(p1, p2), c(0.7770583877e-5, 3.115817913e-5));
+}
+     // SET UP EXPONENTIAL GROWTH in Europe (p2) and East Asia (p3)
+     78084:79024 {
+         t = sim.generation - 78084;
+         p2_size = round(1032.1046957333444 * (1 + 0.003784324268)^t);
+         p3_size = round(553.8181989 * (1 + 0.004780219543)^t);
+         p2.setSubpopulationSize(asInteger(p2_size));
+         p3.setSubpopulationSize(asInteger(p3_size));
+     }
+
+79024 late() {
+
+gg1 = p1.sampleIndividuals(1).genomes[0];
+gg2 = p1.sampleIndividuals(1).genomes[0];
+gg3 = p1.sampleIndividuals(1).genomes[0];
+gg4 = p1.sampleIndividuals(1).genomes[0];
+gg5 = p1.sampleIndividuals(1).genomes[0];
+gg6 = p1.sampleIndividuals(1).genomes[0];
+
+pg1 = p2.sampleIndividuals(1).genomes[0];
+pg2 = p2.sampleIndividuals(1).genomes[0];
+pg3 = p2.sampleIndividuals(1).genomes[0];
+pg4 = p2.sampleIndividuals(1).genomes[0];
+pg5 = p2.sampleIndividuals(1).genomes[0];
+pg6 = p2.sampleIndividuals(1).genomes[0];
+
+xg1 = p3.sampleIndividuals(1).genomes[0];
+xg2 = p3.sampleIndividuals(1).genomes[0];
+xg3 = p3.sampleIndividuals(1).genomes[0];
+xg4 = p3.sampleIndividuals(1).genomes[0];
+xg5 = p3.sampleIndividuals(1).genomes[0];
+xg6 = p3.sampleIndividuals(1).genomes[0];
+
+catn();
+
+catn(">P1_1");
+catn(gg1.nucleotides());
+catn(">P1_2");
+catn(gg2.nucleotides());
+catn(">P1_3");
+catn(gg3.nucleotides());
+catn(">P1_4");
+catn(gg4.nucleotides());
+catn(">P1_5");
+catn(gg5.nucleotides());
+catn(">P1_6");
+catn(gg6.nucleotides());
+
+catn(">P2_1");
+catn(pg1.nucleotides());
+catn(">P2_2");
+catn(pg2.nucleotides());
+catn(">P2_3");
+catn(pg3.nucleotides());
+catn(">P2_4");
+catn(pg4.nucleotides());
+catn(">P2_5");
+catn(pg5.nucleotides());
+catn(">P2_6");
+catn(pg6.nucleotides());
+
+catn(">P3_1");
+catn(xg1.nucleotides());
+catn(">P3_2");
+catn(xg2.nucleotides());
+catn(">P3_3");
+catn(xg3.nucleotides());
+catn(">P3_4");
+catn(xg4.nucleotides());
+catn(">P3_5");
+catn(xg5.nucleotides());
+catn(">P3_6");
+catn(xg6.nucleotides());
+}

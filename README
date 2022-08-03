@@ -1,0 +1,9 @@
+Run each item in 01_fix_ref.sh if needed (just once) to get a good starting sequence
+
+Run slim
+
+Go to step 4 jellyfish - skip step 3 bc slim outputs genomes - edit this file
+5
+6
+7
+
