@@ -38,18 +38,18 @@ kmer_frequencies_dictionary = pickle.load( open( pickled_dictionary_filtered, "r
 
 df = pd.DataFrame(kmer_frequencies_dictionary)
 
-#population = ['P1_1', 'P1_2', 'P1_3', 'P1_4', 'P1_5', 'P1_6', 
-#	      'P2_1', 'P2_2', 'P2_3', 'P2_4', 'P2_5', 'P2_6']
+#population = ['P1', 'P1', 'P1', 'P1', 'P1', 'P1', 
+#	      'P2', 'P2', 'P2', 'P2', 'P2', 'P2']
 
-#get sorted fastas and trim ends of names to get sample labels
+#get sorted fastas and trim ends of names to get population labels
 sortedfiles = listdir(pickled_dictionary_path)
 fa_sorted = [f for f in sortedfiles if f.endswith('_mers_sorted.fa')]
 samples = [s.split('_') for s in fa_sorted]
-population = ['_'.join(s[:-3]) for s in samples]
+population = ['_'.join(s[:-4]) for s in samples]
 population.sort()
 
-#get just population names (targets in PCA)
-targets = list(set(['_'.join(s[:-4]) for s in samples])) #uniques
+#get just unique population names (targets in PCA)
+targets = list(set(population)) #uniques
 targets.sort()
 
 df['Population'] = population
@@ -62,12 +62,13 @@ std_x = StandardScaler().fit_transform(x)
 
 
 #################
+#enough PCs for 80% of variance
 
 pca = PCA(n_components = len(population)) #use num samples
 principalComponents = pca.fit_transform(std_x)
 
 cum_val, num_PCs = get_num_pcs(pca.explained_variance_ratio_) #this tells us how many PCs are needed for >= 80% of the variance
-print(cum_val, num_PCs) #double check that its about 80% and 21 PCs
+print(cum_val, num_PCs) 
 
 list_of_column_headers = [] #for dataframe
 
@@ -79,7 +80,6 @@ principalDf = pd.DataFrame(data = principalComponents, columns = list_of_column_
 
 finalDf = pd.concat([principalDf, df[['Population']]], axis = 1) #add a column with populations
 
-
 #Visualize 2D Projection 80%
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1)
@@ -88,7 +88,7 @@ plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 
 
 #targets = ['P1', 'P2'] #, 'EAS_JPT', 'EUR_TSI', 'SAS_ITU'] #make sure they are listed in the correct order
 colors = ['m', 'r', 'g', 'b', 'y', 'c', 'k', 'w']
-colors = colors[:len(targets)]
+colors = colors[:len(targets)] #number of colors to match number populations
 for target, color in zip(targets,colors):
     indicesToKeep = finalDf['Population'] == target
     ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
@@ -100,30 +100,32 @@ ax.grid()
 plt.savefig(pickled_dictionary_path+'/'+sim_info+"_2D_PCA_80_prcn_variance.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
 
-#TRYING TO MAKE PLOT WORK
-import numpy as np
-n = len(population)/len(targets) #assumes equal sample per population
-c2 = list(np.repeat(colors, n))
-
-plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=c2) 
-plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
-plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
-plt.savefig(pickled_dictionary_path+'/'+sim_info+"_2PC_pop_plot_80percent.pdf")
-plt.clf() #clear the plt variable so the plots don't overlap
-
 #just 2 pcs NOT 80%
-#PCA Projection to 2D
 pca = PCA(n_components=2)
 principalComponents = pca.fit_transform(std_x)
 
 principalDf = pd.DataFrame(data = principalComponents, columns = ['principal component 1', 'principal component 2'])
 finalDf = pd.concat([principalDf, df[['Population']]], axis = 1) #add a column with populations
 
-plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=c2)
+print(principalDf.to_string())
+print(finalDf.to_string())
+
+fig = plt.figure(figsize = (8,8))
+ax = fig.add_subplot(1,1,1)
 plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
 plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
-plt.savefig(pickled_dictionary_path+'/'+sim_info+"_2PC_pop_plot.pdf")
-plt.clf() #clear the plt variable so the plots don't overlap
+
+for target, color in zip(targets,colors):
+    indicesToKeep = finalDf['Population'] == target
+    ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+               , finalDf.loc[indicesToKeep, 'principal component 2']
+               , c = color
+               , s = 50)
+ax.legend(targets)
+ax.grid()
+
+plt.savefig(pickled_dictionary_path+'/'+sim_info+"_2PCplot.pdf")
+plt.clf() #clear the plt variable so the plots don't overlap    
 
 #Clustering with K-means
 inertias = []
