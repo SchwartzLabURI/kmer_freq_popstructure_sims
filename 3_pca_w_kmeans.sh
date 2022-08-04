@@ -16,7 +16,7 @@ module load SciPy-bundle/2020.11-intel-2020b
 module load scikit-learn/0.23.2-intel-2020b
 
 F=human_3pop.fa
-k=9 #change
+k=21 #change
 
 kmer_prof_dir="${F/.fa/}_${k}_mers/sorted/"
 

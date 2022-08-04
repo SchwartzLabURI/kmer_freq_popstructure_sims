@@ -15,7 +15,7 @@ module load Python/3.6.6-foss-2018b
 module load Jellyfish/2.2.10-foss-2018b
 
 F=human_3pop.fa #change this
-k=9  #change this
+k=21  #change this
 
 kmer_prof_dir="${F/.fa/}_${k}_mers/" #folder has fasta simulation name and k
 mkdir ${kmer_prof_dir}

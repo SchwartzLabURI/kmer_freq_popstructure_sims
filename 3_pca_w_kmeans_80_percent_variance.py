@@ -16,6 +16,20 @@ module load SciPy-bundle/2020.11-intel-2020b
 module load scikit-learn/0.23.2-intel-2020b
 '''
 
+def get_num_pcs(expl_var):
+    list_of_var_vals = list(expl_var)
+    cum_val = 0.0
+    num_PCs = 0
+    for i in list_of_var_vals:
+            percnt = float(i) * 100
+            cum_val += percnt
+            if(cum_val >= 80.0):
+                num_PCs = int(list_of_var_vals.index(i)) + 1
+                break;
+    return (cum_val, num_PCs)
+
+############## Setup
+
 pickled_dictionary_path = sys.argv[1]
 pickled_dictionary_filtered = pickled_dictionary_path + '/filterdict.pkl' 
 kmer_frequencies_dictionary = pickle.load( open( pickled_dictionary_filtered, "rb" ) )
@@ -46,25 +60,12 @@ y = df.loc[:,['Population']].values
 std_x = StandardScaler().fit_transform(x)
 
 
+#################
+
 pca = PCA(n_components = len(population)) #use num samples
 principalComponents = pca.fit_transform(std_x)
 
-
-def get_num_pcs(expl_var):
-    list_of_var_vals = list(expl_var)
-    cum_val = 0.0
-    num_PCs = 0
-    for i in list_of_var_vals:
-            percnt = float(i) * 100
-            cum_val += percnt
-            if(cum_val >= 80.0):
-                num_PCs = int(list_of_var_vals.index(i)) + 1
-                break;
-    return (cum_val, num_PCs)
-
-
 cum_val, num_PCs = get_num_pcs(pca.explained_variance_ratio_) #this tells us how many PCs are needed for >= 80% of the variance
-
 print(cum_val, num_PCs) #double check that its about 80% and 21 PCs
 
 list_of_column_headers = [] #for dataframe
@@ -78,11 +79,11 @@ principalDf = pd.DataFrame(data = principalComponents, columns = list_of_column_
 finalDf = pd.concat([principalDf, df[['Population']]], axis = 1) #add a column with populations
 
 
-#Visualize 2D Projection
+#Visualize 2D Projection 80%
 fig = plt.figure(figsize = (8,8))
 ax = fig.add_subplot(1,1,1)
-ax.set_xlabel('Principal Component 1', fontsize = 15)
-ax.set_ylabel('Principal Component 2', fontsize = 15)
+plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
+plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
 
 #targets = ['P1', 'P2'] #, 'EAS_JPT', 'EUR_TSI', 'SAS_ITU'] #make sure they are listed in the correct order
 colors = ['m', 'r', 'g', 'b', 'y', 'c', 'k', 'w']
@@ -104,8 +105,22 @@ n = len(population)/len(targets) #assumes equal sample per population
 c2 = list(np.repeat(colors, n))
 
 plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=c2) 
-plt.xlabel('PC1', fontsize = 15)
-plt.ylabel('PC2', fontsize = 15)
+plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
+plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
+plt.savefig(pickled_dictionary_path+"/2PC_pop_plot_80percent.pdf")
+plt.clf() #clear the plt variable so the plots don't overlap
+
+#just 2 pcs NOT 80%
+#PCA Projection to 2D
+pca = PCA(n_components=2)
+principalComponents = pca.fit_transform(std_x)
+
+principalDf = pd.DataFrame(data = principalComponents, columns = ['principal component 1', 'principal component 2'])
+finalDf = pd.concat([principalDf, df[['Population']]], axis = 1) #add a column with populations
+
+plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=c2)
+plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
+plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
 plt.savefig(pickled_dictionary_path+"/2PC_pop_plot.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
 
@@ -117,7 +132,7 @@ for k in range(1,10):
     model = KMeans(n_clusters=k)
 
     # Fit model to samples
-    model.fit(finalDf.iloc[:,:num_PCs])#use the number of PCs that give 80% of variance
+    model.fit(finalDf.iloc[:,:2]) #2 pcs
 
     # Append the inertia to the list of inertias
     inertias.append(model.inertia_)
@@ -126,17 +141,17 @@ plt.plot(range(1,10), inertias, '-p', color='gold')
 plt.xlabel('number of clusters, k')
 plt.ylabel('inertia')
 plt.xticks(ks)
-plt.savefig(pickled_dictionary_path+"/elbow_method_plot_80_prcnt_variance.pdf")
+plt.savefig(pickled_dictionary_path+"/elbow_method_plot_2pcs.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
 
 model = KMeans(n_clusters=3)#double check that it actually is three from the elbow plot
 
-model.fit(finalDf.iloc[:,:num_PCs]) #build a model from the number of PCs that hold 80% of the variance
+model.fit(finalDf.iloc[:,:2]) #build a model from 2pcs      #the number of PCs that hold 80% of the variance
 
-labels = model.predict(finalDf.iloc[:,:num_PCs])
+labels = model.predict(finalDf.iloc[:,:2])
 
-plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=labels) #from the model trained on 80% plot the first 2PCs
-plt.xlabel('PC1', fontsize = 15)
-plt.ylabel('PC2', fontsize = 15)
-plt.savefig(pickled_dictionary_path+"/k_means_clustering_80_prcnt_variance.pdf")
+plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=labels) #from the model trained on plot the first 2PCs
+plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
+plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
+plt.savefig(pickled_dictionary_path+"/k_means_clustering_2PC.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
