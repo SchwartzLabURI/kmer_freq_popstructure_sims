@@ -31,7 +31,7 @@ def get_num_pcs(expl_var):
 ############## Setup
 
 sim_info = sys.argv[1]
-pickled_dictionary_path = sys.argv[1]i +'/sorted'
+pickled_dictionary_path = sys.argv[1] +'/sorted'
 pickled_dictionary_filtered = pickled_dictionary_path + '/filterdict.pkl' 
 kmer_frequencies_dictionary = pickle.load( open( pickled_dictionary_filtered, "rb" ) )
 
@@ -122,7 +122,7 @@ finalDf = pd.concat([principalDf, df[['Population']]], axis = 1) #add a column w
 plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=c2)
 plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
 plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
-plt.savefig(pickled_dictionary_path+'/'+sim_info"_2PC_pop_plot.pdf")
+plt.savefig(pickled_dictionary_path+'/'+sim_info+"_2PC_pop_plot.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
 
 #Clustering with K-means
@@ -154,5 +154,5 @@ labels = model.predict(finalDf.iloc[:,:2])
 plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=labels) #from the model trained on plot the first 2PCs
 plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
 plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
-plt.savefig(pickled_dictionary_path+'/'+sim_info"_k_means_clustering_2PC.pdf")
+plt.savefig(pickled_dictionary_path+'/'+sim_info+"_k_means_clustering_2PC.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
