@@ -30,7 +30,8 @@ def get_num_pcs(expl_var):
 
 ############## Setup
 
-pickled_dictionary_path = sys.argv[1]
+sim_info = sys.argv[1]
+pickled_dictionary_path = sys.argv[1]i +'/sorted'
 pickled_dictionary_filtered = pickled_dictionary_path + '/filterdict.pkl' 
 kmer_frequencies_dictionary = pickle.load( open( pickled_dictionary_filtered, "rb" ) )
 
@@ -96,7 +97,7 @@ for target, color in zip(targets,colors):
                , s = 50)
 ax.legend(targets)
 ax.grid()
-plt.savefig(pickled_dictionary_path+"/2D_PCA_80_prcn_variance.pdf")
+plt.savefig(pickled_dictionary_path+'/'+sim_info+"_2D_PCA_80_prcn_variance.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
 
 #TRYING TO MAKE PLOT WORK
@@ -107,7 +108,7 @@ c2 = list(np.repeat(colors, n))
 plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=c2) 
 plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
 plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
-plt.savefig(pickled_dictionary_path+"/2PC_pop_plot_80percent.pdf")
+plt.savefig(pickled_dictionary_path+'/'+sim_info+"_2PC_pop_plot_80percent.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
 
 #just 2 pcs NOT 80%
@@ -121,7 +122,7 @@ finalDf = pd.concat([principalDf, df[['Population']]], axis = 1) #add a column w
 plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=c2)
 plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
 plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
-plt.savefig(pickled_dictionary_path+"/2PC_pop_plot.pdf")
+plt.savefig(pickled_dictionary_path+'/'+sim_info"_2PC_pop_plot.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
 
 #Clustering with K-means
@@ -141,7 +142,7 @@ plt.plot(range(1,10), inertias, '-p', color='gold')
 plt.xlabel('number of clusters, k')
 plt.ylabel('inertia')
 plt.xticks(ks)
-plt.savefig(pickled_dictionary_path+"/elbow_method_plot_2pcs.pdf")
+plt.savefig(pickled_dictionary_path+'/'+sim_info+"_elbow_method_plot_2pcs.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap
 
 model = KMeans(n_clusters=3)#double check that it actually is three from the elbow plot
@@ -153,5 +154,5 @@ labels = model.predict(finalDf.iloc[:,:2])
 plt.scatter(finalDf['principal component 1'], finalDf['principal component 2'], c=labels) #from the model trained on plot the first 2PCs
 plt.xlabel('PC 1 (%.2f%%)' % (pca.explained_variance_ratio_[0]*100), fontsize = 11)
 plt.ylabel('PC 2 (%.2f%%)' % (pca.explained_variance_ratio_[1]*100), fontsize = 11)
-plt.savefig(pickled_dictionary_path+"/k_means_clustering_2PC.pdf")
+plt.savefig(pickled_dictionary_path+'/'+sim_info"_k_means_clustering_2PC.pdf")
 plt.clf() #clear the plt variable so the plots don't overlap

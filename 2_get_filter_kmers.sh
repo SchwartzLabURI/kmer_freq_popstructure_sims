@@ -15,7 +15,7 @@ module load Python/3.6.6-foss-2018b
 module load Jellyfish/2.2.10-foss-2018b
 
 F=human_3pop.fa #change
-k=21 #change
+k=7 #change - check that there are enough kmers with counts >2 that this all works
 
 kmer_prof_dir="${F/.fa/}_${k}_mers/sorted"
 

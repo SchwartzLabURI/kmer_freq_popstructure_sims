@@ -16,9 +16,9 @@ module load SciPy-bundle/2020.11-intel-2020b
 module load scikit-learn/0.23.2-intel-2020b
 
 F=human_3pop.fa
-k=21 #change
+k=7 #change
 
-kmer_prof_dir="${F/.fa/}_${k}_mers/sorted/"
+kmer_prof_dir="${F/.fa/}_${k}_mers"
 
 python 3_pca_w_kmeans_80_percent_variance.py ${kmer_prof_dir}
 
