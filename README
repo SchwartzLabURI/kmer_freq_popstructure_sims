@@ -3,16 +3,11 @@ This is the code to run the simulations for Hrystenko et al. 2022
 
 MOST OF THE THIS CODE IS COPIED (and revised) FROM https://github.com/YanaHrytsenko/determining_population_structure_from_k-mer_frequencies
 
-Run each item in 0_fix_ref.sh if needed (just once) to get a good starting sequence (or just use the provided segments of the human genome or random starting sequence)
+Open the .slim file in the SlimGUI and run it (did this on my Mac locally not a cluster)
+Copy the output to a .fa file and delete the header text
 
-Check out the .slim files
-
-Run slim (did this on my Mac locally not a cluster)
-
-Go to step 1 - edit this file where it says change
-Go to step 2 - edit this file where it says change
-Go to step 3 - edit this file where it says change
-
+Open 1_jellyfish.sh - edit this file where it says change and run
+Repeat for 2_ and 3_ sh files
 
 This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
