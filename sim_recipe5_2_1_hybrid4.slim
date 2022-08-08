@@ -1,0 +1,89 @@
+//Recipe pop structure: adding sub pops
+//see manual p 113
+//modified for hybrids followed by low migration
+
+initialize() {
+	defineConstant("L", 1e7);
+	initializeSLiMOptions(nucleotideBased=T);
+	initializeAncestralNucleotides(randomNucleotides(L));
+	initializeMutationTypeNuc("m1", 0.5, "f", 0.0);
+	initializeGenomicElementType("g1", m1, 1.0, mmJukesCantor(1e-7));
+	initializeGenomicElement(g1, 0, L-1);
+	initializeRecombinationRate(1e-8);
+}
+
+1 {
+	sim.addSubpop("p1", 500);
+	sim.addSubpop("p2", 200);
+	sim.addSubpop("p3", 500);
+	p2.setMigrationRates(c(p1,p3), c(0.5,0.5)); //50% from each
+}
+
+10 late() {
+	p2.setMigrationRates(c(p1,p3), c(0.0002,0.0002));
+	p1.setMigrationRates(c(p2), c(0.0002));
+	p3.setMigrationRates(c(p2), c(0.0002));
+}
+
+5500 late() {
+gg1 = p1.sampleIndividuals(1).genomes[0];
+gg2 = p1.sampleIndividuals(1).genomes[0];
+gg3 = p1.sampleIndividuals(1).genomes[0];
+gg4 = p1.sampleIndividuals(1).genomes[0];
+gg5 = p1.sampleIndividuals(1).genomes[0];
+gg6 = p1.sampleIndividuals(1).genomes[0];
+
+pg1 = p2.sampleIndividuals(1).genomes[0];
+pg2 = p2.sampleIndividuals(1).genomes[0];
+pg3 = p2.sampleIndividuals(1).genomes[0];
+pg4 = p2.sampleIndividuals(1).genomes[0];
+pg5 = p2.sampleIndividuals(1).genomes[0];
+pg6 = p2.sampleIndividuals(1).genomes[0];
+
+xg1 = p3.sampleIndividuals(1).genomes[0];
+xg2 = p3.sampleIndividuals(1).genomes[0];
+xg3 = p3.sampleIndividuals(1).genomes[0];
+xg4 = p3.sampleIndividuals(1).genomes[0];
+xg5 = p3.sampleIndividuals(1).genomes[0];
+xg6 = p3.sampleIndividuals(1).genomes[0];
+
+catn(">P1_1");
+catn(gg1.nucleotides());
+catn(">P1_2");
+catn(gg2.nucleotides());
+catn(">P1_3");
+catn(gg3.nucleotides());
+catn(">P1_4");
+catn(gg4.nucleotides());
+catn(">P1_5");
+catn(gg5.nucleotides());
+catn(">P1_6");
+catn(gg6.nucleotides());
+
+catn(">P2_1");
+catn(pg1.nucleotides());
+catn(">P2_2");
+catn(pg2.nucleotides());
+catn(">P2_3");
+catn(pg3.nucleotides());
+catn(">P2_4");
+catn(pg4.nucleotides());
+catn(">P2_5");
+catn(pg5.nucleotides());
+catn(">P2_6");
+catn(pg6.nucleotides());
+
+catn(">P3_1");
+catn(xg1.nucleotides());
+catn(">P3_2");
+catn(xg2.nucleotides());
+catn(">P3_3");
+catn(xg3.nucleotides());
+catn(">P3_4");
+catn(xg4.nucleotides());
+catn(">P3_5");
+catn(xg5.nucleotides());
+catn(">P3_6");
+catn(xg6.nucleotides());
+
+}
