@@ -20,4 +20,4 @@ for FOLDER in sim*; do
 
 done
 
-#  python ${STR_FOLDER}/distruct.py -K 3 --input=${DATA_FOLDER}/${F}.structuretest --output=${DATA_FOLDER}/${F}.structuretest_distruct.svg
+#  python ${STR_FOLDER}/distruct.py -K 3 --input=${DATA_FOLDER}/${F}.structuretest --output=${DATA_FOLDER}/${F}.structuretest_distruct.svg  --popfile=${DATA_FOLDER}/3pop
