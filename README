@@ -9,6 +9,10 @@ Copy the output to a .fa file and delete the header text
 Open 1_jellyfish.sh - edit this file where it says change and run
 Repeat for 2_ and 3_ sh files
 
+For the structure comparison in the paper:
+Run get_snps.sh to convert fasta fies to structure format
+Run faststructure.sh to reun faststructure, manually observed best K and run distruct accordingly (commented out)
+
 This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
